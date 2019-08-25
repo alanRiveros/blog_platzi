@@ -4,8 +4,8 @@ import { BrowserRouter, Route } from 'react-router-dom'
 import Menu from './menu'
 import Usuarios from './usuarios'
 import Publicaciones from './Publicaciones'
-
-const Tareas = () => <div>Tareas</div>
+import Tareas from './Tareas'
+import TareasGuardar from './Tareas/Guardar'
 
 const App = (props) => (
   <BrowserRouter>
@@ -14,6 +14,8 @@ const App = (props) => (
       <Route exact path='/' component={ Usuarios } />
       <Route exact path='/tareas' component={ Tareas } />
       <Route exact path='/publicaciones/:key' component={Publicaciones} />
+      <Route exact path='/tareas/guardar' component={TareasGuardar} />
+      <Route exact path='/tareas/guardar/:usu_id/:tar_id' component={TareasGuardar} />
     </div>
   </BrowserRouter>
 )

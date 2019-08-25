@@ -2,12 +2,17 @@ import React, { Component } from 'react'
 import {connect}  from 'react-redux'
 import Spinner from '../General/Spinner'
 import Fatal from '../General/Fatal'
+import Comentarios from './Comentarios'
 
 import * as usuariosAction from '../../actions/usuariosAction'
 import * as publicacionesAction from '../../actions/publicacionesAction'
 
 const { traerTodos: usuariosTraerTodos } = usuariosAction
-const { traerPorUsuario: publicacionesTraerPorUsuario } = publicacionesAction
+const { 
+  traerPorUsuario: publicacionesTraerPorUsuario, 
+  abrirCerrar,
+  traerComentarios
+} = publicacionesAction
 
 class Publicaciones extends Component {
   async componentDidMount() {
@@ -75,14 +80,22 @@ class Publicaciones extends Component {
     if (!publicaciones.length) return;
     if (!('publicaciones_key' in usuarios[key])) return ;
 
-    const {
+    const { publicaciones_key } = usuarios[key]
+    
+    return this.mostrarInfo(
+      publicaciones[publicaciones_key], 
       publicaciones_key
-    } = usuarios[key]
-    return publicaciones[publicaciones_key].map((publicacion) => (
+    )
+  }
+
+  mostrarInfo = (publicaciones, pub_key) => (
+    publicaciones.map((publicacion, com_key) => (
       <div 
         className='pub_titulo'
         key={publicacion.id}
-        onClick={ () => alert(publicacion.id) }
+        onClick={ 
+          () => this.mostrarComentarios(pub_key, com_key, publicacion.comentarios) 
+        }
       >
         <h2>
           { publicacion.title }
@@ -90,16 +103,28 @@ class Publicaciones extends Component {
         <h3>
           { publicacion.body }
         </h3>
+        {
+          (publicacion.abierto) ? <Comentarios comentarios={publicacion.comentarios} /> : ''
+        }
       </div>
-    ));
+    ))
+  )
+
+  mostrarComentarios = ( pub_key, com_key, comentarios ) => {
+    console.log(comentarios)
+    this.props.abrirCerrar(pub_key, com_key)
+    if(!comentarios.length){
+      this.props.traerComentarios(pub_key, com_key)
+    }
+
   }
 
   render() {
     console.log(this.props)
     return (
       <div>
-        { this.ponerUsuario() }
-        { this.ponerPublicaciones() }
+         { this.ponerUsuario() }
+         { this.ponerPublicaciones() }
       </div>
     )
   }
@@ -114,7 +139,9 @@ const mapStateToProps = ({usuariosReducer, publicacionesReducer}) => {
 
 const mapDispatchToProps = {
   usuariosTraerTodos,
-  publicacionesTraerPorUsuario
+  publicacionesTraerPorUsuario,
+  abrirCerrar,
+  traerComentarios
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Publicaciones);
